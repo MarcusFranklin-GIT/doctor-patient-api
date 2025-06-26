@@ -9,5 +9,5 @@ export class DoctorSignupDto{
     password:string;
 
     @IsString()
-    Specialization:string;
+    specialization:string;
 }
