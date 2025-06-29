@@ -5,19 +5,19 @@ export type DoctorDocument = Doctor & Document; //this is for mondodb to use thi
 @Schema({ collection: 'doctor' }) 
 export class Doctor{ //this export is used in the doctor.module.ts file to import this schema
     @Prop({ required: true ,unique: true})
-    doctorId: string;
+    email: string; // Doctor's email address - serves as unique identifier
 
     @Prop({ required: true })
     password: string;
+    
+    @Prop({required: true})
+    name: string;
 
     @Prop({required: true })
     specialization: string;
 
-    @Prop({required:true})
-    availabileSlots : string[];
-
-    @Prop({required:true})
-    bookedSlots:String[];
+    @Prop({default: 'doctor'})
+    usertype: string; // This field is used to differentiate between doctor and patient
 }
 
-export const DoctorSchema= SchemaFactory.createForClass(Doctor) //this creates or generates the schema mongo db can understand
+export const DoctorSchema= SchemaFactory.createForClass(Doctor); //this creates or generates the schema mongo db can understand

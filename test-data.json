@@ -1,0 +1,95 @@
+{
+  "doctor": {
+    "signup": {
+      "email": "doctor.smith@hospital.com",
+      "password": "Doctor@123",
+      "name": "Dr. John Smith",
+      "specialization": "Cardiology"
+    },
+    "signin": {
+      "email": "doctor.smith@hospital.com",
+      "password": "Doctor@123"
+    },
+    "availability": {
+      "valid": {
+        "from": "2025-06-29T09:00:00.000Z",
+        "to": "2025-06-29T17:00:00.000Z"
+      },
+      "invalid": {
+        "missing_from": {
+          "to": "2025-06-29T17:00:00.000Z"
+        },
+        "missing_to": {
+          "from": "2025-06-29T09:00:00.000Z"
+        },
+        "invalid_date_format": {
+          "from": "2025-06-29 09:00:00",
+          "to": "2025-06-29 17:00:00"
+        },
+        "end_before_start": {
+          "from": "2025-06-29T17:00:00.000Z",
+          "to": "2025-06-29T09:00:00.000Z"
+        }
+      }
+    },
+    "invalid": {
+      "email_format": {
+        "email": "doctor.smith",
+        "password": "Doctor@123",
+        "name": "Invalid Email Doctor",
+        "specialization": "Cardiology"
+      },
+      "weak_password": {
+        "email": "doctor.smith@hospital.com",
+        "password": "weakpass",
+        "name": "Weak Password Doctor",
+        "specialization": "Cardiology"
+      },
+      "wrong_password": {
+        "email": "doctor.smith@hospital.com",
+        "password": "Wrong@123",
+        "name": "Wrong Password Doctor",
+        "specialization": "Cardiology"
+      },
+      "nonexistent_user": {
+        "email": "nonexistent@hospital.com",
+        "password": "Test@123"
+      }
+    }
+  },
+  "patient": {
+    "signup": {
+      "email": "patient.john@example.com",
+      "password": "Patient@123",
+      "name": "John Doe",
+      "age": 35,
+      "gender": "Male"
+    },
+    "signin": {
+      "email": "patient.john@example.com",
+      "password": "Patient@123"
+    },
+    "invalid": {
+      "email_format": {
+        "email": "patient.john",
+        "password": "Patient@123"
+      },
+      "weak_password": {
+        "email": "patient.john@example.com",
+        "password": "weakpass"
+      },
+      "wrong_password": {
+        "email": "patient.john@example.com",
+        "password": "Wrong@123"
+      },
+      "nonexistent_user": {
+        "email": "nonexistent@example.com",
+        "password": "Test@123"
+      },
+      "missing_required_fields": {
+        "email": "new.patient@example.com",
+        "password": "Patient@123"
+      }
+    }
+  }
+}

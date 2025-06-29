@@ -1,0 +1,229 @@
+{
+  "info": {
+    "name": "Doctor Availability API",
+    "description": "Complete test collection for the Doctor Availability API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "doctor_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Doctor Sign Up",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"doctor.smith@hospital.com\",\n  \"password\": \"Doctor@123\",\n  \"name\": \"Dr. John Smith\",\n  \"specialization\": \"Cardiology\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/doctor/signup",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "doctor", "signup"]
+            }
+          }
+        },
+        {
+          "name": "Doctor Sign In",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.environment.set(\"doctor_token\", response.access_token);",
+                  "    console.log(\"Token saved:\", response.access_token.substring(0, 50) + \"...\");",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"doctor.smith@hospital.com\",\n  \"password\": \"Doctor@123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/doctor/signin",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "doctor", "signin"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Doctor",
+      "item": [
+        {
+          "name": "Debug Token",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/doctor/debug-token",
+              "host": ["{{base_url}}"],
+              "path": ["doctor", "debug-token"]
+            }
+          }
+        },
+        {
+          "name": "Set Availability (Valid)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from\": \"2025-06-29T09:00:00.000Z\",\n  \"to\": \"2025-06-29T17:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/doctor/set-availability",
+              "host": ["{{base_url}}"],
+              "path": ["doctor", "set-availability"]
+            }
+          }
+        },
+        {
+          "name": "Set Availability (Missing Field)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"to\": \"2025-06-29T17:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/doctor/set-availability",
+              "host": ["{{base_url}}"],
+              "path": ["doctor", "set-availability"]
+            }
+          }
+        },
+        {
+          "name": "Set Availability (Invalid Date)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from\": \"2025-06-29 09:00:00\",\n  \"to\": \"2025-06-29 17:00:00\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/doctor/set-availability",
+              "host": ["{{base_url}}"],
+              "path": ["doctor", "set-availability"]
+            }
+          }
+        },
+        {
+          "name": "Set Availability (End Before Start)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from\": \"2025-06-29T17:00:00.000Z\",\n  \"to\": \"2025-06-29T09:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/doctor/set-availability",
+              "host": ["{{base_url}}"],
+              "path": ["doctor", "set-availability"]
+            }
+          }
+        },
+        {
+          "name": "Set Availability (No Auth)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"from\": \"2025-06-29T09:00:00.000Z\",\n  \"to\": \"2025-06-29T17:00:00.000Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/doctor/set-availability",
+              "host": ["{{base_url}}"],
+              "path": ["doctor", "set-availability"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

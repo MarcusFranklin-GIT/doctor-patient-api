@@ -1,0 +1,51 @@
+{
+  "doctor": {
+    "signup_success": {
+      "message": "doctor registered successfully"
+    },
+    "signin_success": {
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "usertype": "doctor",
+      "message": "doctor Loged-In successfully"
+    }
+  },
+  "patient": {
+    "signup_success": {
+      "message": "Patient registered successfully"
+    },
+    "signin_success": {
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+      "usertype": "patient",
+      "message": "Patient logged in successfully"
+    }
+  },
+  "jwt_payload": {
+    "doctor": {
+      "sub": "60d21b4667d0d8992e610c85",
+      "email": "doctor.smith@hospital.com",
+      "usertype": "doctor"
+    },
+    "patient": {
+      "sub": "60d21b4667d0d8992e610c86", 
+      "email": "patient.john@example.com",
+      "usertype": "patient"
+    }
+  },
+  "schemas": {
+    "doctor": {
+      "email": "doctor.smith@hospital.com",
+      "password": "hashed_password",
+      "name": "Dr. John Smith",
+      "specialization": "Cardiology",
+      "usertype": "doctor"
+    },
+    "patient": {
+      "email": "patient.john@example.com",
+      "password": "hashed_password",
+      "name": "John Doe",
+      "age": 35,
+      "gender": "Male",
+      "usertype": "patient"
+    }
+  }
+}
