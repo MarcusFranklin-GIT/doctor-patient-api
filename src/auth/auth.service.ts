@@ -11,6 +11,7 @@ import { Doctor, DoctorDocument } from 'src/doctor/doctor.schema';
 import { Patient, PatientDocument } from '../patient/patient.schema';
 import { PatientSignupDto, PatientSigninDto } from './dto/patient-signup.dto';
 import { access } from 'fs';
+import { appoinment, appoinmentDocument } from 'src/doctor/schema/appoinment.schema';
 
 @Injectable()
 export class AuthService {
@@ -19,6 +20,7 @@ export class AuthService {
         @InjectModel(Doctor.name) 
         private doctorModel: Model<DoctorDocument>,
         @InjectModel(Patient.name) private patientModel:Model<PatientDocument>,
+        @InjectModel(appoinment.name) private appointmentModel: Model<appoinmentDocument>,
         private jwtService: JwtService
     ){}
  //for doctors
@@ -184,5 +186,23 @@ export class AuthService {
                 console.error('❌ Signin Error:', error);
                 throw new InternalServerErrorException('An error occurred during signin');
             }
-        }    
+        }  
+        
+        async getAppointments(user: { sub: string, usertype: string }) {
+            try{
+                let appoinments;
+                if(user.usertype =='doctor') {
+                    appoinments= await this.appointmentModel.find({doctorId: user.sub}).exec();
+                }else{
+                    appoinments= await this.appointmentModel.find({patientId: user.sub}).exec();
+                }
+                if(!appoinments || appoinments.length === 0) {
+                    throw new Error('No appointments found for this user');
+                }
+                return appoinments;
+            }catch(error) {
+                console.error('❌ Get Appointments Error:', error);
+                throw new InternalServerErrorException('An error occurred while fetching appointments');
+            }
+        }
 }

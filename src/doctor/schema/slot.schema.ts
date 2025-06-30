@@ -17,6 +17,7 @@ export class slot{
 
     @Prop({default : 'available'})
     status : string;
+    static schema: any;
 }
 
 export const SlotSchema = SchemaFactory.createForClass(slot); //this creates or generates the schema mongo db can understand

@@ -8,11 +8,12 @@ import { Patient, PatientSchema } from 'src/patient/patient.schema';
 import { JwtStrategy } from './jwt.strategy';
 import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
+import { appoinment, appoinmentSchema } from 'src/doctor/schema/appoinment.schema';
 console.log('JWT_SECRET =', process.env.JWT_SECRET);
 @Module({
   imports :[
     MongooseModule.forFeature([{name:Doctor.name,schema:DoctorSchema},
-      {name:Patient.name,schema:PatientSchema},
+      {name:Patient.name,schema:PatientSchema},{name:appoinment.name,schema:appoinmentSchema}
     ]),
     
     JwtModule.register({
