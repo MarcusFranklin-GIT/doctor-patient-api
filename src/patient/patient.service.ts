@@ -73,7 +73,8 @@ export class PatientService {
             }
             return { 
                 message: 'Appointment booked successfully',
-                appoinment: {
+                appointment: {
+                    ID: appointment._id,
                     Doctor_name : doctor.name,
                     Doctor_specialization: doctor.specialization,
                     patientName: patient.name,

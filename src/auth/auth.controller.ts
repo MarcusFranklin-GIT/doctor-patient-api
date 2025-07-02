@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, UsePipes, ValidationPipe, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { DoctorSignupDto } from './dto/doctor-signup.dto';
 import { DoctorSigninDto } from './dto/doctor-signin.dto';
@@ -50,6 +50,16 @@ export class AuthController {
     @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
     getAppointments(@Req() req: AuthenticatedRequest) {
         return this.authService.getAppointments({
+            sub: req.user.sub,
+            usertype: req.user.usertype
+        });
+    }
+    
+    @Delete('appointments/:id')
+    @UseGuards(JwtAuthGuard)
+    @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
+    cancelAppointment(@Param('id') appointmentId: string, @Req() req: AuthenticatedRequest) {
+        return this.authService.cancelAppointment(appointmentId, {
             sub: req.user.sub,
             usertype: req.user.usertype
         });

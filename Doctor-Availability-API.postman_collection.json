@@ -224,6 +224,60 @@
           }
         }
       ]
+    },
+    {
+      "name": "Appointments",
+      "item": [
+        {
+          "name": "Get Appointments",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/appointments",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "appointments"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Appointment",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{doctor_token}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/auth/appointments/:appointmentId",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "appointments", ":appointmentId"],
+              "variable": [
+                {
+                  "key": "appointmentId",
+                  "value": "REPLACE_WITH_ACTUAL_APPOINTMENT_ID",
+                  "description": "The ID of the appointment to cancel"
+                }
+              ]
+            }
+          }
+        }
+      ]
     }
   ]
 }

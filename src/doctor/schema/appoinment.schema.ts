@@ -18,6 +18,9 @@ export class appoinment{
     @Prop({required: true })
     slotId: string; 
 
+    @Prop({ default: 'open', enum: ['open', 'canceled'] })
+    status: string; 
+
 }
 
 export const appoinmentSchema = SchemaFactory.createForClass(appoinment); //this creates or generates the schema mongo db can understand

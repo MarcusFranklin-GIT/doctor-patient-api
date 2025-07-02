@@ -12,6 +12,7 @@ import { Patient, PatientDocument } from '../patient/patient.schema';
 import { PatientSignupDto, PatientSigninDto } from './dto/patient-signup.dto';
 import { access } from 'fs';
 import { appoinment, appoinmentDocument } from 'src/doctor/schema/appoinment.schema';
+import { slot, SlotDocument } from 'src/doctor/schema/slot.schema';
 
 @Injectable()
 export class AuthService {
@@ -21,6 +22,7 @@ export class AuthService {
         private doctorModel: Model<DoctorDocument>,
         @InjectModel(Patient.name) private patientModel:Model<PatientDocument>,
         @InjectModel(appoinment.name) private appointmentModel: Model<appoinmentDocument>,
+        @InjectModel(slot.name) private slotModel: Model<SlotDocument>,
         private jwtService: JwtService
     ){}
  //for doctors
@@ -203,6 +205,50 @@ export class AuthService {
             }catch(error) {
                 console.error('❌ Get Appointments Error:', error);
                 throw new InternalServerErrorException('An error occurred while fetching appointments');
+            }
+        }
+
+        async cancelAppointment(appointmentId: string, user: { sub: string, usertype: string }) {
+            try {
+                // Find the appointment
+                const appointment = await this.appointmentModel.findById(appointmentId).exec();
+                if (!appointment) {
+                    throw new Error('Appointment not found');
+                }
+
+                // Check if the user is authorized to cancel this appointment
+                if (user.usertype === 'doctor' && appointment.doctorId !== user.sub) {
+                    throw new Error('You are not authorized to cancel this appointment');
+                }
+                if (user.usertype === 'patient' && appointment.patientId !== user.sub) {
+                    throw new Error('You are not authorized to cancel this appointment');
+                }
+
+                // Check if appointment is already canceled
+                if (appointment.status === 'canceled') {
+                    throw new Error('Appointment is already canceled');
+                }
+
+                // Update appointment status to canceled
+                appointment.status = 'canceled';
+                await appointment.save();
+
+                // Update the corresponding slot status back to available
+                const slot = await this.slotModel.findById(appointment.slotId).exec();
+                if (slot) {
+                    slot.status = 'available';
+                    await slot.save();
+                }
+
+                return {
+                    message: 'Appointment canceled successfully',
+                    appointmentId: appointmentId,
+                    canceledBy: user.usertype
+                };
+
+            } catch (error) {
+                console.error('❌ Cancel Appointment Error:', error);
+                throw new InternalServerErrorException('An error occurred while canceling appointment: ' + error.message);
             }
         }
 }

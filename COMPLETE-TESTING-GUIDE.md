@@ -184,84 +184,100 @@ Content-Type: application/json
 
 ---
 
-## 📋 Valid Date Format Examples
+## 🚫 Step 7: Appointment Cancellation
 
-### Accepted ISO 8601 Formats
+### 7.1 Get Appointments (Doctor/Patient)
+
+#### Request
+```http
+GET http://localhost:3000/auth/appointments
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+
+#### Expected Response (200 OK)
+```json
+[
+  {
+    "_id": "677d1234567890abcdef1234",
+    "doctorId": "6860b988da81d750e5c6d66e",
+    "patientId": "6860b988da81d750e5c6d77f",
+    "slotId": "677d1234567890abcdef5678",
+    "status": "open",
+    "__v": 0
+  }
+]
+```
+
+### 7.2 Cancel Appointment
+
+#### Request
+```http
+DELETE http://localhost:3000/auth/appointments/677d1234567890abcdef1234
+Authorization: Bearer YOUR_JWT_TOKEN
+```
+
+#### Expected Response (200 OK)
 ```json
 {
-  "from": "2025-06-29T09:00:00.000Z",     // UTC timezone
-  "to": "2025-06-29T17:00:00.000Z"
+  "message": "Appointment canceled successfully",
+  "appointmentId": "677d1234567890abcdef1234",
+  "canceledBy": "patient"
 }
 ```
 
-```json
-{
-  "from": "2025-06-29T09:00:00+05:30",    // IST timezone
-  "to": "2025-06-29T17:00:00+05:30"
-}
+### 7.3 Verify Slot Availability After Cancellation
+
+After canceling an appointment, the corresponding slot should become available again.
+
+#### Request
+```http
+GET http://localhost:3000/patient/doctors/DOCTOR_ID/slots
+Authorization: Bearer PATIENT_JWT_TOKEN
 ```
 
-```json
-{
-  "from": "2025-06-29T09:00:00-05:00",    // EST timezone
-  "to": "2025-06-29T17:00:00-05:00"
-}
+The previously booked slot should now show `"status": "available"`.
+
+---
+
+## 🔄 Appointment Cancellation Flow
+
+1. **Book an appointment** using the patient booking endpoint
+2. **Get appointments** to retrieve the appointment ID
+3. **Cancel appointment** using the appointment ID
+4. **Verify** the slot is available again
+5. **Try to cancel again** (should fail with appropriate error)
+
+### Cancellation Rules
+- Both doctors and patients can cancel appointments
+- Only appointments with status "open" can be canceled
+- Canceled appointments cannot be canceled again
+- When an appointment is canceled:
+  - Appointment status → "canceled"
+  - Corresponding slot status → "available"
+
+---
+
+## 📋 Updated Testing Scripts
+
+### PowerShell Script
+```powershell
+# Run the complete cancellation test
+.\test-appointment-cancellation.ps1
+```
+
+### Bash Script
+```bash
+# Run the complete cancellation test
+./test-appointment-cancellation.sh
 ```
 
 ---
 
-## 🔧 PowerShell Testing Commands
+## 🔄 Updated Error Scenarios
 
-### Complete Test Script
-```powershell
-# Run the complete test
-.\working-test.ps1
-```
-
-### Manual Step-by-Step Commands
-
-#### 1. Sign In
-```powershell
-$signinBody = '{"email":"doctor.smith@hospital.com","password":"Doctor@123"}'
-$signinResponse = Invoke-RestMethod -Uri "http://localhost:3000/auth/doctor/signin" -Method Post -Body $signinBody -ContentType "application/json"
-$token = $signinResponse.access_token
-```
-
-#### 2. Set Headers
-```powershell
-$headers = @{
-    "Authorization" = "Bearer $token"
-    "Content-Type" = "application/json"
-}
-```
-
-#### 3. Test Availability
-```powershell
-$availabilityBody = '{"from":"2025-06-29T09:00:00.000Z","to":"2025-06-29T17:00:00.000Z"}'
-Invoke-RestMethod -Uri "http://localhost:3000/doctor/set-availability" -Method Post -Body $availabilityBody -Headers $headers
-```
-
----
-
-## 🎯 Expected Behavior Summary
-
-| Test Case | Expected Status | Expected Response |
-|-----------|----------------|-------------------|
-| Valid signin | 200 OK | JWT token + usertype |
-| Valid availability | 200 OK | Success message + slot count |
-| Missing field | 400 Bad Request | Validation error |
-| Invalid date format | 400 Bad Request | ISO 8601 format error |
-| End before start | 400 Bad Request | Time logic error |
-| No auth header | 401 Unauthorized | Unauthorized message |
-| Invalid token | 401 Unauthorized | Unauthorized message |
-
----
-
-## ✅ Quick Verification Checklist
-
-- [ ] Server is running on localhost:3000
-- [ ] Doctor account exists (run signup first if needed)
-- [ ] JWT token is properly formatted in Authorization header
-- [ ] Request body uses exact ISO 8601 date format
-- [ ] Content-Type header is set to application/json
-- [ ] Token hasn't expired (get new one if over 1 hour old)
+| Scenario | Expected Status | Expected Response |
+|----------|----------------|-------------------|
+| Cancel non-existent appointment | 500 Internal Server Error | "Appointment not found" |
+| Cancel already canceled appointment | 500 Internal Server Error | "Appointment is already canceled" |
+| Cancel without authorization | 401 Unauthorized | Unauthorized message |
+| Cancel appointment of another user | 500 Internal Server Error | "You are not authorized to cancel this appointment" |
